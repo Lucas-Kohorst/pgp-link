@@ -8,15 +8,15 @@ export default function ApiExamplePage() {
       <p>
         <em>You must be signed in to see responses.</em>
       </p>
+      <h2>PGP</h2>
+      <p>/api/keys/pgp</p>
+      <iframe src="/api/keys/pgp" />
       <h2>Session</h2>
       <p>/api/keys/session</p>
       <iframe src="/api/keys/session" />
       <h2>JSON Web Token</h2>
       <p>/api/keys/jwt</p>
       <iframe src="/api/keys/jwt" />
-      <h2>PGP</h2>
-      <p>/api/keys/pgp</p>
-      <iframe src="/api/keys/pgp" />
     </Layout>
   )
 }
