@@ -11,24 +11,7 @@ export default function ServerSidePage() {
   // populated on render without needing to go through a loading stage.
   return (
     <Layout>
-      <h1>Server Side Rendering</h1>
-      <p>
-        This page uses the <strong>getServerSession()</strong> method in{" "}
-        <strong>getServerSideProps()</strong>.
-      </p>
-      <p>
-        Using <strong>getServerSession()</strong> in{" "}
-        <strong>getServerSideProps()</strong> is the recommended approach if you
-        need to support Server Side Rendering with authentication.
-      </p>
-      <p>
-        The advantage of Server Side Rendering is this page does not require
-        client side JavaScript.
-      </p>
-      <p>
-        The disadvantage of Server Side Rendering is that this page is slower to
-        render.
-      </p>
+      <h1>Info</h1>
       <pre>{JSON.stringify(session, null, 2)}</pre>
     </Layout>
   )
