@@ -18,17 +18,18 @@ export default async function handler(
       const name = session?.user?.name
       const email = session?.user?.email
 
-      // const token = await getToken({ req }) 
-      // const passphrase = token ? token.jti : null
+      const token = await getToken({ req }) 
+      const passphrase = token?.jti
 
       if (
         typeof name !== "string" ||
         typeof email !== "string"
+        typeof passphrase !== "string"
       ) {
         res.status(400).send("Unauthorized")
         return
       } else {
-        await generateKeyPair(name, email, "passphrase").then((value) => {
+        await generateKeyPair(name, email, passphrase).then((value) => {
           const publicKey = value.publicKey
           const privateKey = value.privateKey
           const response = {publicKey: publicKey, privateKey: privateKey}
