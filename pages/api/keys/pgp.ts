@@ -8,41 +8,45 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions)
-  if (session) {
-    // const name = session.user ? session.user.name : "fakeuser"
-    // const email = session.user ? session.user.email : "fake"
+    const session = await getServerSession(req, res, authOptions)
 
-    // const token = await getToken({ req }) 
-    // const passphrase = token ? token.jti : null
+    if (session == null) {
+      res.status(401).send("Unauthorized")
+      return
+    }
+    else {
+      const name = session?.user?.name
+      const email = session?.user?.email
 
-    // if (name !== undefined && email !== undefined && passphrase !== undefined) {
-    const {publicKey, privateKey} = await generateKeyPair("name", "email", "passphrase")
-    const response = {publicKey: publicKey, privateKey: privateKey}
+      // const token = await getToken({ req }) 
+      // const passphrase = token ? token.jti : null
 
-    const resp = "user is logged in"
-    res.send(JSON.stringify(resp, null, 2)) 
-    // } else {
-    //   res.send(JSON.stringify(null, 2))    
-    // }
-  } else {
-    res.send(JSON.stringify(null))    
-  }
-  // res.send(JSON.stringify(session, null, 2))
+      if (
+        typeof name !== "string" ||
+        typeof email !== "string"
+      ) {
+        res.status(400).send("Unauthorized")
+        return
+      } else {
+        await generateKeyPair(name, email, "passphrase").then((value) => {
+          const publicKey = value.publicKey
+          const privateKey = value.privateKey
+          const response = {publicKey: publicKey, privateKey: privateKey}
+          res.send(JSON.stringify(response, null, 2)) 
+        }).catch((err) => {
+          console.log(err)
+        });
+      }
+    }
 }
 
 async function generateKeyPair(name: string, email: string, passphrase: string): Promise<{ publicKey: string, privateKey: string }> {
-  const { privateKey, publicKey, revocationCertificate } = await openpgp.generateKey({
+  const userIds = [{ name: name, email: email }]
+  return openpgp.generateKey({
     type: 'ecc', // Type of the key, defaults to ECC
     curve: 'curve25519', // ECC curve name, defaults to curve25519
-    userIDs: [{ name: name, email: email }], // you can pass multiple user IDs
+    userIDs: userIds, // you can pass multiple user IDs
     passphrase: passphrase, // protects the private key
     format: 'armored' // output key format, defaults to 'armored' (other options: 'binary' or 'object')
-  }).then((key) => {
-    console.log(privateKey)
-    console.log(publicKey)
-    return { publicKey: publicKey, privateKey: privateKey };
-  }).catch((err) => {
-    console.log(err)
-  });
+  })
 }
