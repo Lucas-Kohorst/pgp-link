@@ -5,7 +5,7 @@ export default function PolicyPage() {
     <Layout>
       <p>
         This is an example site to demonstrate how to use{" "}
-        <a href="https://next-auth.js.org">NextAuth.js</a> for authentication.
+        <a href="https://pgp-link.vercel.app">PGP Link</a> for authentication.
       </p>
       <h2>Terms of Service</h2>
       <p>
