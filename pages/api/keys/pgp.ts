@@ -9,24 +9,25 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const session = await getServerSession(req, res, authOptions)
-  if (session) {
-    // const name = session.user ? session.user.name : "fakeuser"
-    // const email = session.user ? session.user.email : "fake"
+  // if (session) {
+  //   // const name = session.user ? session.user.name : "fakeuser"
+  //   // const email = session.user ? session.user.email : "fake"
 
-    // const token = await getToken({ req }) 
-    // const passphrase = token ? token.jti : null
+  //   // const token = await getToken({ req }) 
+  //   // const passphrase = token ? token.jti : null
 
-    // if (name !== undefined && email !== undefined && passphrase !== undefined) {
-    const {publicKey, privateKey} = await generateKeyPair("name", "email", "passphrase")
-    const resp = {publicKey: publicKey, privateKey: privateKey}
+  //   // if (name !== undefined && email !== undefined && passphrase !== undefined) {
+  //   const {publicKey, privateKey} = await generateKeyPair("name", "email", "passphrase")
+  //   const resp = {publicKey: publicKey, privateKey: privateKey}
 
-    res.send(JSON.stringify(resp, null, 2)) 
-    // } else {
-    //   res.send(JSON.stringify(null, 2))    
-    // }
-  } else {
-    res.send(JSON.stringify(null))    
-  }
+  //   res.send(JSON.stringify(resp, null, 2)) 
+  //   // } else {
+  //   //   res.send(JSON.stringify(null, 2))    
+  //   // }
+  // } else {
+  //   res.send(JSON.stringify(null))    
+  // }
+  res.send(JSON.stringify(session, null, 2))
 }
 
 async function generateKeyPair(name: string, email: string, passphrase: string): Promise<{ publicKey: string, privateKey: string }> {
@@ -37,6 +38,9 @@ async function generateKeyPair(name: string, email: string, passphrase: string):
     passphrase: passphrase, // protects the private key
     format: 'armored' // output key format, defaults to 'armored' (other options: 'binary' or 'object')
   });
+
+  console.log(privateKey)
+  console.log(publicKey)
 
   return { publicKey: publicKey, privateKey: privateKey };
 }
