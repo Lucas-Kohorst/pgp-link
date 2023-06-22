@@ -10,24 +10,33 @@ export default async function handler(
 ) {
   const session = await getServerSession(req, res, authOptions)
   if (session) {
-    const { name, email } = session.user
-    const token = await getToken({ req }) 
+    // const name = session.user ? session.user.name : "fakeuser"
+    // const email = session.user ? session.user.email : "fake"
 
-    const passphrase = token?.jti
-    const {publicKey, privateKey} = await generateKeyPair(name, email, passphrase)
+    // const token = await getToken({ req }) 
+    // const passphrase = token ? token.jti : null
 
-    res.send(JSON.stringify((publicKey + privateKey), null, 2))    
+    // if (name !== undefined && email !== undefined && passphrase !== undefined) {
+    const {publicKey, privateKey} = await generateKeyPair("name", "email", "passphrase")
+    const resp = {publicKey: publicKey, privateKey: privateKey}
+
+    res.send(JSON.stringify(resp, null, 2)) 
+    // } else {
+    //   res.send(JSON.stringify(null, 2))    
+    // }
   } else {
-    res.send(JSON.stringify(null, 2))    
+    res.send(JSON.stringify(null))    
   }
-
 }
 
 async function generateKeyPair(name: string, email: string, passphrase: string): Promise<{ publicKey: string, privateKey: string }> {
-  const { privateKeyArmored, publicKeyArmored } = await openpgp.generateKey({
-    userIds: [{ name: name, email: email }],
-    curve: 'ed25519',
-    passphrase: passphrase
+  const { privateKey, publicKey, revocationCertificate } = await openpgp.generateKey({
+    type: 'ecc', // Type of the key, defaults to ECC
+    curve: 'curve25519', // ECC curve name, defaults to curve25519
+    userIDs: [{ name: name, email: email }], // you can pass multiple user IDs
+    passphrase: passphrase, // protects the private key
+    format: 'armored' // output key format, defaults to 'armored' (other options: 'binary' or 'object')
   });
-  return { publicKey: publicKeyArmored, privateKey: privateKeyArmored };
+
+  return { publicKey: publicKey, privateKey: privateKey };
 }
