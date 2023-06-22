@@ -38,10 +38,11 @@ async function generateKeyPair(name: string, email: string, passphrase: string):
     userIDs: [{ name: name, email: email }], // you can pass multiple user IDs
     passphrase: passphrase, // protects the private key
     format: 'armored' // output key format, defaults to 'armored' (other options: 'binary' or 'object')
+  }).then((key) => {
+    console.log(privateKey)
+    console.log(publicKey)
+    return { publicKey: publicKey, privateKey: privateKey };
+  }).catch((err) => {
+    console.log(err)
   });
-
-  console.log(privateKey)
-  console.log(publicKey)
-
-  return { publicKey: publicKey, privateKey: privateKey };
 }
