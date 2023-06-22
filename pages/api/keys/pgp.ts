@@ -23,7 +23,7 @@ export default async function handler(
 
       if (
         typeof name !== "string" ||
-        typeof email !== "string"
+        typeof email !== "string" ||
         typeof passphrase !== "string"
       ) {
         res.status(400).send("Unauthorized")
