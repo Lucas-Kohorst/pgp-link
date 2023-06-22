@@ -17,8 +17,9 @@ export default async function handler(
     // const passphrase = token ? token.jti : null
 
     // if (name !== undefined && email !== undefined && passphrase !== undefined) {
-    // const {publicKey, privateKey} = await generateKeyPair("name", "email", "passphrase")
-    // const resp = {publicKey: publicKey, privateKey: privateKey}
+    const {publicKey, privateKey} = await generateKeyPair("name", "email", "passphrase")
+    const response = {publicKey: publicKey, privateKey: privateKey}
+
     const resp = "user is logged in"
     res.send(JSON.stringify(resp, null, 2)) 
     // } else {
