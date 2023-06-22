@@ -9,7 +9,7 @@ yarn dev
 ```
 
 ## Features 
-- [x] Login with Github, Google, Twitter
+- [x] Login with Github
 - [x] Generate PGP Keys
 - [ ] Specify Custom Password
 - [ ] Store the encrypted keyring in the database 
