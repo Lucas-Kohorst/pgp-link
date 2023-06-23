@@ -1,24 +1,32 @@
 {
-  "private": true,
-  "description": "Generate and store pgp keyrings based on SSO",
-  "repository": "https://github.com/Lucas-Kohorst/pgp-link.git",
-  "homepage": "https://pgp-link.vercel.app",
-  "scripts": {
-    "dev": "next",
-    "build": "next build",
-    "start": "next start"
-  },
-  "author": "Lucas Kohorst",
-  "dependencies": {
-    "next": "latest",
-    "next-auth": "latest",
-    "openpgp": "^5.9.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@types/node": "^18.16.2",
-    "@types/react": "^18.2.0",
-    "typescript": "^5.0.4"
-  }
+	"name": "@example/nextjs-pages",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint",
+		"clean:all": "rimraf .next node_modules"
+	},
+	"dependencies": {
+		"@supabase/auth-helpers-nextjs": "workspace:*",
+		"@supabase/supabase-js": "^2.26.0",
+		"autoprefixer": "10.4.14",
+		"next": "13.4.4",
+		"openpgp": "^5.9.0",
+		"postcss": "8.4.24",
+		"react": "18.2.0",
+		"react-dom": "18.2.0",
+		"tailwindcss": "3.3.2"
+	},
+	"devDependencies": {
+		"@types/node": "20.2.5",
+		"@types/react": "18.2.7",
+		"@types/react-dom": "18.2.4",
+		"config": "workspace:*",
+		"eslint": "8.41.0",
+		"eslint-config-next": "13.4.4",
+		"typescript": "5.0.4"
+	}
 }

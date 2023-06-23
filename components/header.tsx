@@ -1,13 +1,30 @@
 import Link from "next/link"
-import { signIn, signOut, useSession } from "next-auth/react"
 import styles from "./header.module.css"
+
+import {
+  Session,
+  createPagesBrowserClient,
+  createPagesServerClient
+} from '@supabase/auth-helpers-nextjs';
+import type { GetServerSidePropsContext, NextPage } from 'next';
+import { useEffect, useState } from 'react';
 
 // The approach used in this component shows how to build a sign in and sign out
 // component that works on pages which support both client and server side
 // rendering, and avoids any flash incorrect content on initial page load.
-export default function Header() {
-  const { data: session, status } = useSession()
-  const loading = status === "loading"
+export default function Header({ user, session }: { user: User | null; session: Session | null }) {
+  const supabase = createPagesBrowserClient<Database>();
+
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      const { data } = await supabase.from('users').select('*').single();
+      setData(data);
+    }
+
+    if (user) loadData();
+  }, [user, supabase]);
 
   return (
     <header>
@@ -16,50 +33,51 @@ export default function Header() {
       </noscript>
       <div className={styles.signedInStatus}>
         <p
-          className={`nojs-show ${
-            !session && loading ? styles.loading : styles.loaded
-          }`}
+          className={`nojs-show ${!session ? styles.loading : styles.loaded
+            }`}
         >
-          {!session && (
+          {!user && (
             <>
               <span className={styles.notSignedInText}>
                 You are not signed in
               </span>
-              <a
-                href={`/api/auth/signin`}
-                className={styles.buttonPrimary}
-                onClick={(e) => {
-                  e.preventDefault()
-                  signIn()
+              <button
+                className={styles.button}
+                onClick={() => {
+                  supabase.auth.signInWithOAuth({
+                    provider: 'github',
+                    options: {
+                      scopes: 'repo',
+                      redirectTo: 'http://localhost:3000/api/callback'
+                    }
+                  });
                 }}
               >
-                Sign in
-              </a>
+                Login with github
+              </button>
             </>
           )}
-          {session?.user && (
+          {user && (
             <>
-              {session.user.image && (
+              {/* {user.image && (
                 <span
-                  style={{ backgroundImage: `url('${session.user.image}')` }}
+                  style={{ backgroundImage: `url('${user.image}')` }}
                   className={styles.avatar}
                 />
-              )}
+              )} */}
               <span className={styles.signedInText}>
                 <small>Signed in as</small>
                 <br />
-                <strong>{session.user.email ?? session.user.name}</strong>
+                <strong>{user.username ?? user.full_name}</strong>
               </span>
-              <a
-                href={`/api/auth/signout`}
+              <button
                 className={styles.button}
-                onClick={(e) => {
-                  e.preventDefault()
-                  signOut()
+                onClick={async () => {
+                  await supabase.auth.signOut();
                 }}
               >
-                Sign out
-              </a>
+                Logout
+              </button>
             </>
           )}
         </p>
@@ -69,23 +87,29 @@ export default function Header() {
           <li className={styles.navItem}>
             <Link href="/">Home</Link>
           </li>
-          {/* <li className={styles.navItem}>
-            <Link href="/client">Client</Link>
-          </li> */}
           <li className={styles.navItem}>
             <Link href="/info">Info</Link>
           </li>
           <li className={styles.navItem}>
             <Link href="/api-example">API</Link>
           </li>
-          {/* <li className={styles.navItem}>
-            <Link href="/admin">Admin</Link>
-          </li> */}
-          {/* <li className={styles.navItem}>
-            <Link href="/me">Me</Link>
-          </li> */}
         </ul>
       </nav>
     </header>
   )
 }
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const supabase = createPagesServerClient<Database>(ctx);
+
+  const {
+    data: { session }
+  } = await supabase.auth.getSession();
+
+  return {
+    props: {
+      session,
+      user: session?.user ?? null
+    }
+  };
+};

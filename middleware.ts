@@ -1,17 +1,30 @@
-import { withAuth } from "next-auth/middleware"
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-// More on how NextAuth.js middleware works: https://next-auth.js.org/configuration/nextjs#middleware
-export default withAuth({
-  callbacks: {
-    authorized({ req, token }) {
-      // `/admin` requires admin role
-      if (req.nextUrl.pathname === "/admin") {
-        return token?.userRole === "admin"
-      }
-      // `/me` only requires the user to be logged in
-      return !!token
-    },
-  },
-})
+export async function middleware(req: NextRequest) {
+	// We need to create a response and hand it to the supabase client to be able to modify the response headers.
+	const res = NextResponse.next();
+	// Create authenticated Supabase Client
+	const supabase = createMiddlewareClient({ req, res });
+	// Check if we have a session
+	const {
+		data: { session }
+	} = await supabase.auth.getSession();
 
-export const config = { matcher: ["/admin", "/me"] }
+	// Check auth condition
+	if (session?.user.email?.endsWith('@gmail.com')) {
+		// Authentication successful, forward request to protected route.
+		return res;
+	}
+
+	// Auth condition not met, redirect to home page.
+	const redirectUrl = req.nextUrl.clone();
+	redirectUrl.pathname = '/';
+	redirectUrl.searchParams.set(`redirectedFrom`, req.nextUrl.pathname);
+	return NextResponse.redirect(redirectUrl);
+}
+
+export const config = {
+	matcher: '/middleware-protected'
+};

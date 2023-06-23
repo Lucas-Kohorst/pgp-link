@@ -1,18 +1,15 @@
-import { SessionProvider } from "next-auth/react"
-import "./styles.css"
+import { useRouter } from 'next/router';
+import { createPagesBrowserClient, Session } from '@supabase/auth-helpers-nextjs';
+import type { AppProps } from 'next/app';
+import '../styles/styles.css';
 
-import type { AppProps } from "next/app"
-import type { Session } from "next-auth"
+function MyApp({ Component, pageProps }: AppProps<{ initialSession: Session }>) {
+	const router = useRouter();
+	const supabase = createPagesBrowserClient<Database>();
 
-// Use of the <SessionProvider> is mandatory to allow components that call
-// `useSession()` anywhere in your application to access the `session` object.
-export default function App({
-  Component,
-  pageProps: { session, ...pageProps },
-}: AppProps<{ session: Session }>) {
-  return (
-    <SessionProvider session={session}>
-      <Component {...pageProps} />
-    </SessionProvider>
-  )
+	return (
+		<Component {...pageProps} />
+	);
 }
+
+export default MyApp;
