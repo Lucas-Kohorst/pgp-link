@@ -15,7 +15,7 @@ export async function GET() {
         console.log(user)
 
         // get full name 
-        const { name, error } = await supabase
+        const { data, error } = await supabase
             .from('users')
             .select('full_name')
             .eq('id', user?.id);
@@ -24,7 +24,7 @@ export async function GET() {
             console.log(error);
             return NextResponse.json({ error: error });
         } else {
-            return NextResponse.json({ name })
+            return NextResponse.json({ data })
         }
     } catch (err) {
         console.log(err);
