@@ -6,31 +6,13 @@ import { Database } from '@/types_db';
 
 export async function GET(req: Request) {
     if (req.method === 'GET') {
-        const supabase = createRouteHandlerClient<Database>({ cookies });
-        const {
-            data: { user }
-        } = await supabase.auth.getUser();
+        try {
+            const supabase = createRouteHandlerClient<Database>({ cookies });
+            const {
+                data: { user }
+            } = await supabase.auth.getUser();
 
-        if (user == null) {
-            return new Response(
-                JSON.stringify({ error: { statusCode: 401, message: "Unauthorized, Sign In" } }),
-                {
-                    status: 401
-                }
-            );
-        } else {
-            console.log(user)
-            // const name = user?.name
-            const name = "name"
-            const email = user?.email
-
-            const passphrase = "passphrase"
-
-            if (
-                typeof name !== "string" ||
-                typeof email !== "string" ||
-                typeof passphrase !== "string"
-            ) {
+            if (user == null) {
                 return new Response(
                     JSON.stringify({ error: { statusCode: 401, message: "Unauthorized, Sign In" } }),
                     {
@@ -38,13 +20,36 @@ export async function GET(req: Request) {
                     }
                 );
             } else {
+                console.log(user)
+                // const name = user?.name
+                const name = "name"
+                const email = user?.email
+
+                const passphrase = "passphrase"
+
+                if (
+                    typeof name !== "string" ||
+                    typeof email !== "string" ||
+                    typeof passphrase !== "string"
+                ) {
+                    return new Response(
+                        JSON.stringify({ error: { statusCode: 401, message: "Unauthorized, Sign In" } }),
+                        {
+                            status: 401
+                        }
+                    );
+                } catch {
+                    console.log(err);
+                    return new Response(JSON.stringify(err), { status: 500 });
+                }
+            } else {
                 await generateKeyPair(name, email, passphrase).then((value) => {
                     const publicKey = value.publicKey
                     const privateKey = value.privateKey
                     const response = { publicKey: publicKey, privateKey: privateKey }
                     return new Response(JSON.stringify({ response }), {
                         status: 200
-                      });
+                    });
                 }).catch((err) => {
                     console.log(err)
                     return new Response(
