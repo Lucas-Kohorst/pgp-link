@@ -1,12 +1,11 @@
 import * as openpgp from 'openpgp';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { getURL } from '@/utils/helpers';
 import { Database } from '@/types_db';
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-    'use server';
     try {
         const supabase = createRouteHandlerClient<Database>({ cookies });
         const {
@@ -16,7 +15,7 @@ export async function GET() {
         console.log(user)
 
         // get full name 
-        const { data, error } = await supabase
+        const { name, error } = await supabase
             .from('users')
             .select('full_name')
             .eq('id', user?.id);
@@ -25,11 +24,11 @@ export async function GET() {
             console.log(error);
             return NextResponse.json({ error: error });
         } else {
-            return NextResponse.json({ user })
+            return NextResponse.json({ name })
         }
     } catch (err) {
         console.log(err);
-        return NextResponse.json({ error: 'Not Authenticated, Failed in Main' + err });
+        return NextResponse.json({ error: 'Not Authenticated, Failed in Main: ' + err });
     }
 }
 
