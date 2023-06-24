@@ -5,6 +5,8 @@ import { getURL } from '@/utils/helpers';
 import { Database } from '@/types_db';
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
         const supabase = createRouteHandlerClient<Database>({ cookies });
