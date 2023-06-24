@@ -27,13 +27,13 @@ export async function GET() {
 
         if (error) {
             console.log(error);
-            return NextResponse.json({ error: 'Not Authenticated: ' + error });
+            return NextResponse.json({ error: error });
         } else {
             return NextResponse.json({ user })
         }
     } catch (err) {
         console.log(err);
-        return NextResponse.json({ error: 'Not Authenticated' });
+        return NextResponse.json({ error: 'Not Authenticated, Failed in Main' });
     }
 }
 
