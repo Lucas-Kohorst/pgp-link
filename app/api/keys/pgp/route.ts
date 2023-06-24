@@ -38,29 +38,29 @@ export async function GET(req: Request) {
                             status: 401
                         }
                     );
-                } catch {
-                    console.log(err);
-                    return new Response(JSON.stringify(err), { status: 500 });
-                }
-            } else {
-                await generateKeyPair(name, email, passphrase).then((value) => {
-                    const publicKey = value.publicKey
-                    const privateKey = value.privateKey
-                    const response = { publicKey: publicKey, privateKey: privateKey }
-                    return new Response(JSON.stringify({ response }), {
-                        status: 200
+                } else {
+                    await generateKeyPair(name, email, passphrase).then((value) => {
+                        const publicKey = value.publicKey
+                        const privateKey = value.privateKey
+                        const response = { publicKey: publicKey, privateKey: privateKey }
+                        return new Response(JSON.stringify({ response }), {
+                            status: 200
+                        });
+                    }).catch((err) => {
+                        console.log(err)
+                        return new Response(
+                            JSON.stringify({ error: { statusCode: 500, message: "Unable to generate a PGP Key" } }),
+                            {
+                                status: 500
+                            }
+                        );
                     });
-                }).catch((err) => {
-                    console.log(err)
-                    return new Response(
-                        JSON.stringify({ error: { statusCode: 500, message: "Unable to generate a PGP Key" } }),
-                        {
-                            status: 500
-                        }
-                    );
-                });
+                }
             }
-        }
+        } catch(err) {
+            console.log(err);
+            return new Response(JSON.stringify(err), { status: 500 });
+        };
     }
 }
 
