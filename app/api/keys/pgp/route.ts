@@ -27,7 +27,7 @@ export async function GET() {
 
         if (error) {
             console.log(error);
-            return NextResponse.json({ error: 'Not Authenticated' });
+            return NextResponse.json({ error: 'Not Authenticated: ' + error });
         } else {
             return NextResponse.json({ user })
         }
