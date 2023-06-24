@@ -5,6 +5,7 @@ import { getURL } from '@/utils/helpers';
 import { Database } from '@/types_db';
 import { NextResponse } from 'next/server'
 
+// force dynamic so that we can use cookies
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
@@ -14,8 +15,6 @@ export async function GET() {
             data: { user }
         } = await supabase.auth.getUser();
 
-        console.log(user)
-
         // get full name 
         const { data, error } = await supabase
             .from('users')
@@ -23,10 +22,27 @@ export async function GET() {
             .eq('id', user?.id);
 
         if (error) {
-            console.log(error);
             return NextResponse.json({ error: error });
         } else {
-            return NextResponse.json({ data })
+            const name = data[0].full_name
+            const email = user?.email
+            const passphrase = "passphrase"
+
+            if (
+                typeof name === "string" &&
+                typeof email === "string" &&
+                typeof passphrase === "string"
+            ) {
+                await generateKeyPair(name, email, passphrase).then((value) => {
+                    const publicKey = value.publicKey
+                    const privateKey = value.privateKey
+                    // TODO: push into supabase vault
+                    const response = { publicKey: publicKey, privateKey: privateKey }
+                    return NextResponse.json({ response })
+                }).catch((err) => {
+                    return NextResponse.json({ error: error });
+                });
+            }
         }
     } catch (err) {
         console.log(err);
@@ -58,11 +74,7 @@ export async function GET() {
 
 //                 const passphrase = "passphrase"
 
-//                 if (
-//                     typeof name !== "string" ||
-//                     typeof email !== "string" ||
-//                     typeof passphrase !== "string"
-//                 ) {
+                //  {
 //                     return new Response(
 //                         JSON.stringify({ error: { statusCode: 401, message: "Unauthorized, Sign In" } }),
 //                         {
@@ -70,22 +82,22 @@ export async function GET() {
 //                         }
 //                     );
 //                 } else {
-//                     await generateKeyPair(name, email, passphrase).then((value) => {
-//                         const publicKey = value.publicKey
-//                         const privateKey = value.privateKey
-//                         const response = { publicKey: publicKey, privateKey: privateKey }
-//                         return new Response(JSON.stringify({ response }), {
-//                             status: 200
-//                         });
-//                     }).catch((err) => {
-//                         console.log(err)
-//                         return new Response(
-//                             JSON.stringify({ error: { statusCode: 500, message: "Unable to generate a PGP Key" } }),
-//                             {
-//                                 status: 500
-//                             }
-//                         );
-//                     });
+                    // await generateKeyPair(name, email, passphrase).then((value) => {
+                    //     const publicKey = value.publicKey
+                    //     const privateKey = value.privateKey
+                    //     const response = { publicKey: publicKey, privateKey: privateKey }
+                    //     return new Response(JSON.stringify({ response }), {
+                    //         status: 200
+                    //     });
+                    // }).catch((err) => {
+                    //     console.log(err)
+                    //     return new Response(
+                    //         JSON.stringify({ error: { statusCode: 500, message: "Unable to generate a PGP Key" } }),
+                    //         {
+                    //             status: 500
+                    //         }
+                    //     );
+                    // // });
 //                 }
 //             }
 //         } catch (err) {
