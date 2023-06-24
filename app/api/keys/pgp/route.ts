@@ -28,7 +28,7 @@ export async function GET() {
         }
     } catch (err) {
         console.log(err);
-        return NextResponse.json({ error: 'Not Authenticated, Failed in Main' + error });
+        return NextResponse.json({ error: 'Not Authenticated, Failed in Main' + err });
     }
 }
 
