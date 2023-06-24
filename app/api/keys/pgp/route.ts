@@ -6,11 +6,6 @@ import { Database } from '@/types_db';
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-    const data = await {
-        name: "name",
-        email: "email",
-    }
-
     try {
         const supabase = createRouteHandlerClient<Database>({ cookies });
         const {
@@ -33,7 +28,7 @@ export async function GET() {
         }
     } catch (err) {
         console.log(err);
-        return NextResponse.json({ error: 'Not Authenticated, Failed in Main' });
+        return NextResponse.json({ error: 'Not Authenticated, Failed in Main' + error });
     }
 }
 
